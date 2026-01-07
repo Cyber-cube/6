@@ -1,0 +1,46 @@
+name: Fetch Update
+on:
+  workflow_dispatch:
+
+permissions:
+  content: write
+  id-token: read
+  pages: write
+
+jobs:
+  main_job:
+    runs_on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+
+      - name: Make hidden files normal
+        run: find . -maxdepth 1 -name ".*" -type f -exec sh -c 'mv "$1" "${1#.}"' _ {} \;
+      - name: Make hidden directories normal
+        run: find . -mindepth 1 -maxdepth 1 -name ".*" -type d -exec sh -c 'mv "$1" "${1#.}"' _ {} \;
+      - name: Make data json hidden in home
+        run: mv ./src/data.json . && mv data.json .data.json
+      - name: Remove all files
+        run: rm -rf *
+      - name: Fork original repo
+        run: git clone https://github.com/Cyber-cube/1
+      - name: Remove data.json of cloned repo
+        run: rm 1/data.json
+      - name: Move files and folders outside of the folder
+        run: cd 1 && find . -maxdepth 1 -mindepth 1 -exec mv {} .. \;
+      - name: Make data.json file not hidden and remove cloned repo
+        run: rmdir 1 && mv .data.json data.json
+      - name: Install npm packages
+        run: npm install
+      - name: Deploy to GitHub Pages
+        run: npm run deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Amend, commit and push changes
+        run: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "Updated forked repo to match changes of original"
