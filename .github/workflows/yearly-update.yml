@@ -1,0 +1,30 @@
+name: Yearly Update
+
+on:
+  workflow_dispatch:
+
+jobs:
+  main_job:
+    name: Main Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install
+      - name: Edit file
+        run: node script/update-file.js
+      - name: Create build directory
+        run: npm run build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+      - name: Amend, commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "Updated forked repo to match changes of original"

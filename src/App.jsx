@@ -22,7 +22,7 @@ function App() {
 
   const [isBirthday, setIsBirthday] = useState(false)
 
-  const startInterval = useRef(useCustomInterval(timeCalculator, 1000))
+  const interval = useRef(useCustomInterval(timeCalculator, 1000))
 
   useEffect(() => {
     if (isReRendered.current) {
@@ -41,9 +41,14 @@ function App() {
     setMinutes(Math.floor(d3.current / 60))
     setSeconds(Math.floor(d3.current % 60))
 
-    startInterval.current()
+    // setTimeout(() => console.log(interval.current.startInterval, interval.current.stopInterval), 5000)
+    interval.current.startInterval()
     isReRendered.current = true
 
+    return () => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        return interval.current.stopInterval();
+    }
   }, [])
 
   function timeCalculator() {

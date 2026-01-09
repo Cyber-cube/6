@@ -9,8 +9,6 @@ function useCustomInterval(callback, interval) {
   const currentTime = useRef(0)
   const renderTriggered = useRef(false)
 
-  const [trigger, setTrigger] = useState(0)
-  
   const startInterval = useCallback(() => {
     if (renderTriggered.current) {
       return
@@ -28,7 +26,6 @@ function useCustomInterval(callback, interval) {
       const drift = Math.max(0, deltaTime - interval)
       const newInterval = interval - drift
 
-      console.log(currentTime.current, initialTime.current, drift, newInterval)
       initialTime.current = currentTime.current
 
       callback()
@@ -40,9 +37,13 @@ function useCustomInterval(callback, interval) {
     }
   }, [callback, interval])
 
+  function stopInterval() {
+    running.current = false
+  }
+
   // useEffect(() => startInterval(), [startInterval])
 
-  return startInterval
+  return {startInterval, stopInterval}
 }
 
 export default useCustomInterval;
