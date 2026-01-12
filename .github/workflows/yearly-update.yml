@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Edit file
-        run: node script/update-file.js
+        run: node scripts/update-file.js
       - name: Create build directory
         run: npm run build
       - name: Deploy to GitHub Pages
