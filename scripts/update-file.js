@@ -8,7 +8,7 @@ fs.readFile("src/data.json", "utf-8", (err, data) => {
 
   fs.writeFile("src/data.json", json, (err) => {
     if (err) throw err
-    console.log("File edited")
+    // console.log("File edited")
   })
-  console.log(object)
+  // console.log(object)
 })
